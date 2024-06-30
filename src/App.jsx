@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 
 function App() {
+  const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
       message: "Hello, I am ChatGpt",
@@ -30,6 +31,9 @@ function App() {
 
     //update the message list
     setMessages(newMessages);
+
+    //Add the Typing Indicator
+    setTyping(true);
   };
 
   return (
@@ -38,7 +42,13 @@ function App() {
         <div style={{ position: "relative", height: "600px", width: "700px" }}>
           <MainContainer>
             <ChatContainer>
-              <MessageList>
+              <MessageList
+                typingIndicator={
+                  typing ? (
+                    <TypingIndicator content={"ChatGpt is Typing"} />
+                  ) : null
+                }
+              >
                 {messages.map((message, i) => {
                   return <Message key={i} model={message} />;
                 })}

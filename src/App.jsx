@@ -13,8 +13,9 @@ import { useState } from "react";
 function App() {
   const [messages, setMessages] = useState([
     {
-      messages: "Hello, I am ChatGpt",
+      message: "Hello, I am ChatGpt",
       sender: "ChatGpt",
+      direction: "incoming",
     },
   ]);
 
@@ -27,6 +28,7 @@ function App() {
 
     const newMessages = [...messages, newMessage]; // all the old messages plus the new message
 
+    //update the message list
     setMessages(newMessages);
   };
 

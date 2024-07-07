@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 
 function App() {
+  const API_KEY = import.meta.env.VITE_API_KEY;
   const [typing, setTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
@@ -34,7 +35,46 @@ function App() {
 
     //Add the Typing Indicator
     setTyping(true);
+    await processMessageToChatGPT(newMessages);
   };
+
+  async function processMessageToChatGPT(chatMessages) {
+    //ChatMessages structure : { sender : "user" or "assitant" , message: "The message content"}
+    //Api Message structutr : { role: "user" or "assistant" , content: "The message content"}
+
+    let apimessages = chatMessages.map((messageObject) => {
+      let role = "";
+      if (messageObject.sender === "ChatGPT") {
+        role = "assistant";
+      } else {
+        role = "user";
+      }
+      return { role: role, content: messageObject.message };
+    });
+
+    // role: "user" -> a message form the user,  role: "assistant" -> a response form Chatgpt
+    // role : "System" -> generally one message from chatgpt defining how we want chat got to respond
+
+    const systemMessage = {
+      role: "system",
+      content: "Explain to a 10 year old",
+    };
+    const apiRequestBody = {
+      model: "gpt-3.5-turbo",
+      messages: [systemMessage, ...apimessages], // {mesasge1, message2,message3...}
+    };
+
+    await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + API_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(apiRequestBody),
+    })
+      .then((data) => data.json())
+      .then((data) => console.log(data));
+  }
 
   return (
     <>
